@@ -246,7 +246,7 @@ void ex6() {
     drum6(S,t);
 }
 
-//se da un set de n val. distincte si o limita ka nr. de val. care pot fi lipite pe plic. Sa se det. cea mai mare sec.
+//se da un set de n val. distincte si o limita k a nr. de val. care pot fi lipite pe plic. Sa se det. cea mai mare sec.
 //de val. consecutive de la 1 la M.(sa se afis M)
 
 void subm7(int v[], bool dp[], int cnt[], int n, int k, int&dm) {
@@ -368,14 +368,68 @@ void ex9() {
 //lin. Daca nr. x se afla pe drum, atunci urmatoarea valoare de pe drum este situata in triunghi pe lin. urmatoare, fie sub x,
 //fie la st. sau la dr. lui x.
 
+void afisMat(int mat[100][100], int m, int n) {
+    for(int i = 0; i < m; i++) {
+        for(int j = 0; j < n; j++) {
+            cout << mat[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+void subm10(int mat[100][100], int sum[100][100],int drum[100][100], int n) {
+    sum[0][0] = mat[0][0];
+    for(int i = 1; i < n; i++) {
+        for(int j = i; j >= 0; j--) {
+            if(sum[i - 1][j - 1] > sum[i - 1][j]) {
+                if(sum[i - 1][j - 1] > sum[i - 1][j + 1]) {
+                    sum[i][j] = mat[i][j] + sum[i - 1][j - 1];
+                    drum[i][j] = -1;
+                }
+                else {
+                    sum[i][j] = mat[i][j] + sum[i - 1][j + 1];
+                    drum[i][j] = 1;
+                }
+            }
+            else if(sum[i - 1][j] > sum[i - 1][j + 1]) {
+                sum[i][j] = mat[i][j] + sum[i - 1][j];
+                drum[i][j] = 0;
+            }
+            else {
+                sum[i][j] = mat[i][j] + sum[i - 1][j + 1];
+                drum[i][j] = 1;
+            }
+        }
+    }
+}
+
+int indMaxLinMax(int mat[100][100], int n, int L) {
+    int max = INT_MIN, ind = -1;
+    for(int i = 0; i < n; i++) {
+        if(mat[L][i] > max) {
+            max = mat[L][i];
+            ind = i;
+        }
+    }
+    return ind;
+}
+
+void drum10(int mat[100][100], int sum[100][100],int drum[100][100], int n) {
+    int ind = indMaxLinMax(mat,n,n - 1);
+
+    for(int i = n - 1; i >= 0; i--) {
+        cout << mat[i][ind] << " ";
+        ind += drum[i][ind];
+    }
+}
+
 void ex10() {
     int n = 4;
     int mat[100][100]{{2},{3,4},{3,2,5},{8,1,3,2}};
+    int drum[100][100]{},sum[100][100]{};
 
-}
-
-void ex11() {
-
+    subm10(mat,sum,drum,n);
+    drum10(mat,sum,drum,n);
 }
 
 //realizati un program care det. nr. de val. nat. formate cu n <= 10 cif. din multimea{1,2,3,4}, a. i. cif. 1 si 2 sa nu
