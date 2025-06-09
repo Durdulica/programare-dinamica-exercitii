@@ -6,14 +6,14 @@ using namespace std;
 //se considera un sir de n nr. nat. Se cere sa se det. cel mai lung subsir strict cresc. al sirului, cu propr. ca toate elem
 //sale sunt nr. prime
 
-void afisVec(int v[], int dim) {
+inline void afisVec(int v[], int dim) {
     for (int i = 0; i < dim; i++) {
         cout << v[i] << " ";
     }
     cout << endl;
 }
 
-bool isPrim(int number) {
+inline bool isPrim(int number) {
     if (number <= 2) {
         return true;
     }
@@ -188,12 +188,12 @@ void dinamica5(int v[], int n, int ctBinar[], int d[], int&dm) {
 }
 
 void drum5(int v[], int d[], int dm) {
-    int t = 0, p = 0;
+    int p = 0;
     cout << dm << endl;
     do {
         while(d[p] != dm) p++;
         cout << v[p] << " ";
-        t = p;
+
         dm--;
     }while(dm > 0);
 }
@@ -464,5 +464,59 @@ void ex12() {
     cout << nrSol << endl;
 }
 
+//se considera multimea formata din primele n <= 30 val. nat. Sa se det. nr. de modalitati de a o partitiona in doua subm.
+//de aceeasi suma
+
+bool valid13(int s[], int k) {
+
+    for(int i = 0; i < k; i++) {
+        if(s[i] == s[k]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+int sumaVec(int v[], int dim) {
+    int sum = 0;
+    for(int i = 0; i < dim; i++) {
+        sum += v[i];
+    }
+    return sum;
+}
+
+void back13(int s[], bool folosit[], int n, int k, int&nrSol) {
+    for(int i = 1; i <= n; i++) {
+        s[k] = i;
+        if(valid13(s,k)) {
+
+            folosit[i] = true;
+            int sum = 0;
+
+            for(int j = 1; j <= n; j++) {
+                if(!folosit[j]) {
+                    sum += i;
+                }
+            }
+            if(sum == sumaVec(s,k)) {
+                nrSol++;
+                afisVec(s,k);
+                break;
+            }
+            back13(s,folosit,n,k + 1,nrSol);
+
+            folosit[i] = false;
+        }
+    }
+}
+
+void ex13() {
+    int n = 7, s[30]{}, nrSol = 0;
+    bool folosit[30]{false};
+
+    back13(s,folosit,n,0,nrSol);
+
+    cout << nrSol << endl;
+}
 
 #endif //EXERCITII_H
