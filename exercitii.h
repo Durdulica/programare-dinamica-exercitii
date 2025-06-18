@@ -1,6 +1,7 @@
 #ifndef EXERCITII_H
 #define EXERCITII_H
 #include <iostream>
+#include <fstream>
 using namespace std;
 
 //se considera un sir de n nr. nat. Se cere sa se det. cel mai lung subsir strict cresc. al sirului, cu propr. ca toate elem
@@ -403,7 +404,7 @@ void subm10(int mat[100][100], int sum[100][100],int drum[100][100], int n) {
     }
 }
 
-int indMaxLinMax(int mat[100][100], int n, int L) {
+int indMaxLinMat(int mat[100][100], int n, int L) {
     int max = INT_MIN, ind = -1;
     for(int i = 0; i < n; i++) {
         if(mat[L][i] > max) {
@@ -414,8 +415,8 @@ int indMaxLinMax(int mat[100][100], int n, int L) {
     return ind;
 }
 
-void drum10(int mat[100][100], int sum[100][100],int drum[100][100], int n) {
-    int ind = indMaxLinMax(mat,n,n - 1);
+void drum10(int mat[100][100],int drum[100][100], int n) {
+    int ind = indMaxLinMat(mat,n,n - 1);
 
     for(int i = n - 1; i >= 0; i--) {
         cout << mat[i][ind] << " ";
@@ -429,7 +430,7 @@ void ex10() {
     int drum[100][100]{},sum[100][100]{};
 
     subm10(mat,sum,drum,n);
-    drum10(mat,sum,drum,n);
+    drum10(mat,drum,n);
 }
 
 //realizati un program care det. nr. de val. nat. formate cu n <= 10 cif. din multimea{1,2,3,4}, a. i. cif. 1 si 2 sa nu
@@ -517,6 +518,175 @@ void ex13() {
     back13(s,folosit,n,0,nrSol);
 
     cout << nrSol << endl;
+}
+
+
+///pbinfo
+
+//se considera un triunghi de nr. nat. format din n linii. Pentru un anumit termen la sumei, termenul urmator se afla pe lin.
+//urmatoare pe aceeasi col. sau pe col. urmatoare. Sa se det cea mai mare suma
+
+void subm01(int mat[100][100], int drum[100][100], int sum[100][100], int n) {
+    sum[0][0] = mat[0][0];
+
+    for(int i = 1; i < n; i++) {
+        for(int j = i; j >= 0; j--) {
+            if(sum[i - 1][j] > sum[i - 1][j - 1]) {
+                sum[i][j] = sum[i - 1][j] + mat[i][j];
+                drum[i][j] = 0;
+            }
+            else {
+                sum[i][j] = sum[i - 1][j - 1] + mat[i][j];
+                drum[i][j] = -1;
+            }
+        }
+    }
+}
+
+int maxLinMat(int mat[100][100], int n, int L) {
+    int max = INT_MIN;
+    for(int i = 0; i < n; i++) {
+        if(mat[L][i] > max) {
+            max = mat[L][i];
+        }
+    }
+    return max;
+}
+
+void pr1() {
+    int n = 5, mat[100][100]{{4},{1,4},{2,1,3},{9,4,4,3},{4,5,2,2,1}};
+    int drum[100][100]{}, sum[100][100]{};
+
+    subm01(mat,drum,sum,n);
+
+    cout << maxLinMat(sum,n,n-1) << endl;
+}
+
+//se considera un triunghi de nr. nat. din n linii. Pentru un anumit termen la sumei, termenul urmator se afla pe lin.
+//urmatoare pe aceeasi col. sau pe col. urmatoare. Sa se det cea mai mica suma
+
+void subm02(int mat[100][100], int drum[100][100], int sum[100][100], int n) {
+    sum[0][0] = mat[0][0];
+
+    for(int i = 1; i < n; i++) {
+        sum[i][i] = sum[i - 1][i - 1] + mat[i][i];
+        drum[i][i] = -1;
+        sum[i][0] = sum[i - 1][0] + mat[i][0];
+        drum[i][0] = 0;
+        for(int j = i - 1; j > 0; j--) {
+            if(sum[i - 1][j] < sum[i - 1][j - 1]) {
+                sum[i][j] = sum[i - 1][j] + mat[i][j];
+                drum[i][j] = 0;
+            }
+            else {
+                sum[i][j] = sum[i - 1][j - 1] + mat[i][j];
+                drum[i][j] = -1;
+            }
+        }
+    }
+}
+
+
+int indMinLinMat(int mat[100][100], int n, int L) {
+    int min = INT_MAX, ind = -1;
+    for(int i = 0; i < n; i++) {
+        if(mat[L][i] < min) {
+            min = mat[L][i];
+            ind = i;
+        }
+    }
+    return ind;
+}
+
+void drum2(int mat[100][100], int drum[100][100], int sum[100][100], int n) {
+    int ind = indMinLinMat(mat,n,n - 1);
+
+    cout << sum[n-1][ind] << endl;
+    for(int i = n - 1; i >= 0; i--) {
+        cout << mat[i][ind] << " ";
+        ind += drum[i][ind];
+    }
+}
+void pr2() {
+    int n = 5, mat[100][100]{{4},{1,4},{9,9,3},{9,4,4,3},{4,5,2,5,6}};
+    int drum[100][100],sum[100][100]{};
+
+    subm02(mat,drum,sum,n);
+
+    drum2(mat,drum,sum,n);
+}
+
+//se considera un triunghi de nr. intregi format din n. linii. Parcurgere: se pleaca din ultimul elem. al ultimei linii,
+//se merge intotdeauna spre st. pe aceeasi lin.(i,j-1) sau pe lin. de deasupra (i-1,j-1).
+
+struct str {
+    int sum;
+    int drum;
+};
+
+void subm03(int mat[100][100], int drum[100][100], int sum[100][100],str str[], int n) {
+    for(int i = n - 1; i >= 0; i--) {
+        sum[i][i] = sum[i + 1][i+1] + mat[i][i];
+        drum[i][i] = 2;
+        for(int j = i; j >= 0; j--) {
+            if(sum[i][j + 1] > sum[i + 1][j + 1]) {
+                sum[i][j] = sum[i][j + 1] + mat[i][j];
+                drum[i][j] = 1;
+            }
+            else {
+                sum[i][j] = sum[i + 1][j + 1] + mat[i][j];
+                drum[i][j] = 2;
+            }
+        }
+    }
+}
+
+void drum03(int mat[100][100],int drum[100][100], int sum[100][100], str str[], int n, int&dim) {
+    str[dim].sum = mat[n-1][n-1];
+    str[dim++].drum = mat[n-1][n-1];
+    int i = n - 1, j = n - 1;
+    while(i >= 0 && j >= 0) {
+        if(drum[i][j] == 2) {
+            i--;
+            j--;
+            str[dim].sum = mat[i][j] + str[dim].sum;
+            str[dim++].drum = mat[i][j];
+        }
+        else {
+            j--;
+            str[dim].sum = mat[i][j] + str[dim].sum;
+            str[dim++].drum = mat[i][j];
+        }
+    }
+}
+ifstream fin("D:/info/c++/clion/programareDinamica-Exercitii/matrice.txt");
+
+void citireMatPatr(int&n, int mat[100][100]) {
+    fin >> n;
+    for(int i = 0; i < n; i++) {
+        for(int j = 0; j <= i; j++) {
+            fin >> mat[i][j];
+        }
+    }
+}
+
+void pr3() {
+    int n, mat[100][100], dp[100][100];
+    citireMatPatr(n, mat);
+
+    for(int i = 0; i < n; i++) {
+        for(int j = 0; j <= i; j++) {
+            if(j == 0) {
+                dp[i][j] = mat[i][j];
+            }
+            else {
+                dp[i][j] = mat[i][j] + max(dp[i][j - 1], dp[i - 1][j - 1]);
+            }
+        }
+    }
+
+    afisMat(dp,n,n);
+    cout << dp[n - 1][n - 1] << endl;
 }
 
 #endif //EXERCITII_H

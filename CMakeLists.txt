@@ -6,4 +6,6 @@ set(CMAKE_CXX_STANDARD 20)
 add_executable(programareDinamica_Exercitii main.cpp
         exercitii.h
         intercalare.h
-        calSah.h)
+        calSah.h
+        bac2025.h
+        bac2025Special.h)

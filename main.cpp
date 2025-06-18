@@ -1,5 +1,5 @@
-#include "exercitii.h"
+#include "bac2025Special.h"
 
 int main() {
-    ex13();
+    ex3();
 }
